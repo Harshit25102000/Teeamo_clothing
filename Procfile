@@ -1,0 +1,1 @@
+web: gunicorn teeamoclothing.wsgi --log-file -
