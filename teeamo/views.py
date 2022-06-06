@@ -83,6 +83,11 @@ def searchresult(request):
     search = request.GET.get('search', "")
     if search:
         products = product.objects.filter(Q(product_name__icontains=search) | Q(color__icontains=search))
+        if products.exists():
+            pass
+        else:
+            data = {'search': search}
+            return render(request, 'teeamo/no_search_result.html', data)
 
 
     else:
@@ -349,7 +354,7 @@ def cart(request):
         order, created = Order.objects.get_or_create(customer=customer,complete=False)
         items = order.orderitem_set.all()
     else:
-        cart = json.loads(request.COOKIES['cart'])
+
         items=[]
         order={'get_cart_total': 0, 'get_cart_items':0,'shipping':False}
 
@@ -400,8 +405,14 @@ def addtocart(request):
                 messages.warning(request,'Order quantity must be greater than 1')
                 return redirect(request, 'addtocart')
             order, created = Order.objects.get_or_create(customer=customer,complete=False)
-            orderItem, created = OrderItem.objects.get_or_create(order=order, product=products,size=size,quantity=quantity)
-            orderItem.save()
+            try:
+                item=OrderItem.objects.get(order=order,product=products,size=size)
+                if item is not None:
+                    item.quantity = (item.quantity + int(quantity))
+                    item.save()
+            except:
+                orderItem, created = OrderItem.objects.get_or_create(order=order, product=products,size=size,quantity=quantity)
+                orderItem.save()
             return redirect(request.META['HTTP_REFERER'])
     else:
         messages.info(request, 'Please login to continue shopping')
@@ -411,15 +422,19 @@ def updateItem(request):
     data=json.loads(request.body)
     productId=data['productId']
     action  = data['action']
+    size= data['size']
     print('action',action)
     print('productId',productId)
 
     customer = request.user
     products= product.objects.get(id=productId)
     order, created = Order.objects.get_or_create(customer=customer,complete=False)
-    orderItem, created = OrderItem.objects.get_or_create(order=order, product=products)
+    orderItem, created = OrderItem.objects.get_or_create(order=order, product=products, size=size)
     if action == 'add':
-        orderItem.quantity = (orderItem.quantity + 1)
+        if orderItem.quantity < 100:
+            orderItem.quantity = (orderItem.quantity + 1)
+        else:
+            pass
     elif action == 'remove':
         orderItem.quantity = (orderItem.quantity - 1)
     elif action =='delete':
@@ -487,7 +502,7 @@ def processOrder(request):
 
             order_currency = 'INR'
 
-            callback_url = 'http://' + str(get_current_site(request)) + "/teeamo/handlerequest/"
+            callback_url = 'https://' + str(get_current_site(request)) + "/teeamo/handlerequest/"
             print(callback_url)
 
             razorpay_order = razorpay_client.order.create(

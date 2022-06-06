@@ -4,14 +4,15 @@ for (var i=0; i< updateBtns.length; i++) {
     updateBtns[i].addEventListener('click',function(){
         var productId = this.dataset.product
         var action = this.dataset.action
-        console.log(productId,action)
+        var size=this.dataset.size
+        console.log(productId,action,size)
 
         console.log('user',user)
         if (user=='AnonymousUser'){
             addCookieItem(productId,action)
         }
         else{
-        updateUserOrder(productId,action)
+        updateUserOrder(productId,action,size)
         }
     })
 }
@@ -38,7 +39,7 @@ function addCookieItem(productId,action){
 	location.reload()
 }
 
-function updateUserOrder(productId,action){
+function updateUserOrder(productId,action,size){
      console.log('User is logged in sending data');
 
      var url='/teeamo/update_item/'
@@ -51,7 +52,7 @@ function updateUserOrder(productId,action){
 
             'X-CSRFToken': csrftoken,
         },
-        body:JSON.stringify({'productId':productId,'action':action})
+        body:JSON.stringify({'productId':productId,'action':action,'size':size})
      })
       .then((response) => {
         return response.json();

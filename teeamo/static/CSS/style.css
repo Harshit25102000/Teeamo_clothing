@@ -84,6 +84,8 @@ p {
   /* margin: auto; */
   padding: 0 1rem;
 }
+
+
 .row {
   display: flex;
   align-items: center;
@@ -337,6 +339,10 @@ ul {
 @media only screen and (max-width: 1060px) {
   .navbar ul li a {
     color: white;
+  }
+
+  #menuitems{
+    display: none;
   }
   .navbar ul {
     z-index: 100;
@@ -842,7 +848,7 @@ form a{
   /* Responsive layout - when the screen is less than 800px wide, make the two columns stack on top of each other instead of next to each other (and change the direction - make the "cart" column go on top) */
   @media (max-width: 600px) {
     .row {
-      flex-direction: column-reverse;
+      flex-direction: column;
     }
     .col-25 {
       margin-bottom: 20px;
@@ -1320,7 +1326,11 @@ display: none;
   font-weight: bold;
   margin: 0% 2%;
 }
-
+@media only screen and (max-width: 600px){
+.order_h5 {
+    font-size:19px;
+    }
+}
 .order_reciept_container4{
   display: flex;
   flex-wrap: wrap;
@@ -1524,3 +1534,14 @@ display: inline-block;
 .pay-sum-btn:hover{
 background-color: #262626;
 }
+
+.no-result-text{
+    margin: 140px auto;
+
+   text-align: center;
+   font-size:50px;
+}
+
+.active .page-link{
+background: #b30000;
+  color: white;}
